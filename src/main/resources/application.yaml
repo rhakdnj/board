@@ -1,0 +1,22 @@
+spring.application.name: board
+
+spring.profiles.active: local
+
+spring.docker.compose.lifecycle-management: start_only
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:13306/mydatabase?useSSL=false&serverTimezone=Asia/Seoul
+    username: myuser
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+---
