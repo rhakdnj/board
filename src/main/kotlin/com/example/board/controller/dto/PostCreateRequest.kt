@@ -1,6 +1,6 @@
 package com.example.board.controller.dto
 
-import com.example.board.service.dto.PostCreateDto
+import com.example.board.service.dto.PostCreateRequestDto
 
 data class PostCreateRequest(
     val title: String,
@@ -9,7 +9,7 @@ data class PostCreateRequest(
 )
 
 fun PostCreateRequest.toDto() =
-    PostCreateDto(
+    PostCreateRequestDto(
         title = title,
         content = content,
         createdBy = createdBy,

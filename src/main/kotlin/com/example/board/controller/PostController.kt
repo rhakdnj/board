@@ -1,14 +1,21 @@
 package com.example.board.controller
 
 import com.example.board.controller.dto.PostCreateRequest
+import com.example.board.controller.dto.PostDetailResponse
+import com.example.board.controller.dto.PostSearchRequest
 import com.example.board.controller.dto.PostUpdateRequest
 import com.example.board.controller.dto.toDto
-import com.example.board.service.PostCommandService
+import com.example.board.controller.dto.toResponse
+import com.example.board.service.PostService
+import com.example.board.service.dto.PostSummaryResponseDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -19,8 +26,8 @@ import java.util.UUID
 
 @Tag(name = "게시글")
 @RestController
-class PostCommandController(
-    private val postCommandService: PostCommandService,
+class PostController(
+    private val postService: PostService,
 ) {
     @Operation(summary = "게시글 생성")
     @PostMapping("/posts")
@@ -29,7 +36,7 @@ class PostCommandController(
     ): ResponseEntity<UUID> =
         ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(postCommandService.createPost(request.toDto()))
+            .body(postService.createPost(request.toDto()))
 
     @Operation(summary = "게시글 수정")
     @PutMapping("/posts/{postId}")
@@ -40,7 +47,7 @@ class PostCommandController(
         ResponseEntity
             .status(HttpStatus.OK)
             .body(
-                postCommandService.updatePost(
+                postService.updatePost(
                     id = id,
                     updateDto = request.toDto(),
                 ),
@@ -53,9 +60,34 @@ class PostCommandController(
         @RequestParam("deletedBy") deletedBy: String,
     ): ResponseEntity<UUID> =
         ResponseEntity.status(HttpStatus.OK).body(
-            postCommandService.deletePost(
+            postService.deletePost(
                 id = id,
                 deletedBy = deletedBy,
             ),
         )
+
+    @Operation(summary = "게시글 검색")
+    @GetMapping("/posts")
+    fun search(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
+        request: PostSearchRequest,
+    ): ResponseEntity<Page<PostSummaryResponseDto>> =
+        ResponseEntity
+            .ok()
+            .body(
+                postService.findPageBy(
+                    pageRequest = PageRequest.of(page - 1, size),
+                    searchDto = request.toDto(),
+                ),
+            )
+
+    @Operation(summary = "게시글 조회")
+    @GetMapping("/posts/{postId}")
+    fun get(
+        @PathVariable("postId") id: UUID,
+    ): ResponseEntity<PostDetailResponse> =
+        ResponseEntity
+            .ok()
+            .body(postService.getPost(id).toResponse())
 }
