@@ -1,6 +1,6 @@
 package com.example.board.exception
 
-open class PostException(
+abstract class PostException(
     message: String,
 ) : RuntimeException(message)
 

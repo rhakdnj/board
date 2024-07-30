@@ -3,14 +3,18 @@ package com.example.board.domain
 import com.example.board.exception.PostNotUpdatableException
 import com.example.board.service.dto.PostUpdateDto
 import com.fasterxml.uuid.Generators
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 import java.util.UUID
 
 @Entity
 class Post(
     @Id
     val id: UUID = Generators.timeBasedEpochRandomGenerator().generate(),
+    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [CascadeType.ALL])
+    val comments: MutableList<Comment> = mutableListOf(),
     title: String,
     content: String,
     createdBy: String,
