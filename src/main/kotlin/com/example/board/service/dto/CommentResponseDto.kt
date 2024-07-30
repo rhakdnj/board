@@ -1,24 +1,24 @@
 package com.example.board.service.dto
 
-import com.example.board.domain.Post
+import com.example.board.domain.Comment
 import java.time.LocalDateTime
 import java.util.UUID
 
-data class PostDetailResponseDto(
+data class CommentResponseDto(
     val id: UUID,
-    val title: String,
     val content: String,
     val createdBy: String,
     val createdAt: LocalDateTime,
-    val comments: List<CommentResponseDto> = emptyList(),
+    val updatedBy: String? = null,
+    val updatedAt: LocalDateTime? = null,
 )
 
-fun Post.toDetailResponse() =
-    PostDetailResponseDto(
+fun Comment.toResponseDto() =
+    CommentResponseDto(
         id = id,
-        title = title,
         content = content,
         createdBy = createdBy,
         createdAt = createdAt,
-        comments = comments.map { it.toResponseDto() },
+        updatedBy = updatedBy,
+        updatedAt = updatedAt,
     )

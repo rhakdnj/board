@@ -1,9 +1,11 @@
 package com.example.board.service
 
+import com.example.board.domain.Comment
 import com.example.board.domain.Post
 import com.example.board.exception.PostNotDeletableException
 import com.example.board.exception.PostNotFoundException
 import com.example.board.exception.PostNotUpdatableException
+import com.example.board.repository.CommentRepository
 import com.example.board.repository.PostRepository
 import com.example.board.service.dto.PostCreateRequestDto
 import com.example.board.service.dto.PostSearchRequestDto
@@ -22,6 +24,7 @@ import org.springframework.data.repository.findByIdOrNull
 class PostServiceTest(
     private val postService: PostService,
     private val postRepository: PostRepository,
+    private val commentRepository: CommentRepository,
 ) : BehaviorSpec({
         given("게시글 생성 시") {
             When("게시글 인풋이 정상적으로 들어오면") {
@@ -182,9 +185,22 @@ class PostServiceTest(
                     }
                 }
             }
+
+            commentRepository.save(Comment(post = saved, content = "댓글 내용1", createdBy = "댓글 작성자"))
+            commentRepository.save(Comment(post = saved, content = "댓글 내용2", createdBy = "댓글 작성자"))
+            commentRepository.save(Comment(post = saved, content = "댓글 내용3", createdBy = "댓글 작성자"))
+            When("댓글 추가시") {
+                val post = postService.getPost(saved.id)
+                then("댓글이 함께 조회됨을 확인한다.") {
+                    post.comments.size shouldBe 3
+                    post.comments[0].content shouldBe "댓글 내용1"
+                    post.comments[1].content shouldBe "댓글 내용2"
+                    post.comments[2].content shouldBe "댓글 내용3"
+                }
+            }
         }
 
-        given("게시글 목록 조회시 ") {
+        given("게시글 목록 조회시") {
             When("게시글 목록이 있을 때") {
                 val postPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto())
                 then("게시글 페이지가 반환된다.") {
