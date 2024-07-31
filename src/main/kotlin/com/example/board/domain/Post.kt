@@ -18,11 +18,19 @@ class Post(
     title: String,
     content: String,
     createdBy: String,
+    tags: List<String> = emptyList(),
 ) : BaseEntity(createdBy = createdBy) {
     var title: String = title
         private set
 
     var content: String = content
+        private set
+
+    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [CascadeType.ALL])
+    var tags: MutableList<Tag> =
+        tags
+            .map { Tag(post = this, name = it, createdBy = createdBy) }
+            .toMutableList()
         private set
 
     fun update(updateDto: PostUpdateDto) {

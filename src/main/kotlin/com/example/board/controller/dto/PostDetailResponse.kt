@@ -11,6 +11,7 @@ data class PostDetailResponse(
     val createdBy: String,
     val createdAt: LocalDateTime,
     val comments: List<CommentResponse> = emptyList(),
+    val tags: List<String> = emptyList(),
 )
 
 fun PostDetailResponseDto.toResponse() =

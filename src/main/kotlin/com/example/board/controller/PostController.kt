@@ -3,11 +3,11 @@ package com.example.board.controller
 import com.example.board.controller.dto.PostCreateRequest
 import com.example.board.controller.dto.PostDetailResponse
 import com.example.board.controller.dto.PostSearchRequest
+import com.example.board.controller.dto.PostSummaryResponse
 import com.example.board.controller.dto.PostUpdateRequest
 import com.example.board.controller.dto.toDto
 import com.example.board.controller.dto.toResponse
 import com.example.board.service.PostService
-import com.example.board.service.dto.PostSummaryResponseDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Page
@@ -72,14 +72,15 @@ class PostController(
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
         request: PostSearchRequest,
-    ): ResponseEntity<Page<PostSummaryResponseDto>> =
+    ): ResponseEntity<Page<PostSummaryResponse>> =
         ResponseEntity
             .ok()
             .body(
-                postService.findPageBy(
-                    pageRequest = PageRequest.of(page - 1, size),
-                    searchDto = request.toDto(),
-                ),
+                postService
+                    .findPageBy(
+                        pageRequest = PageRequest.of(page - 1, size),
+                        searchDto = request.toDto(),
+                    ).toResponse(),
             )
 
     @Operation(summary = "게시글 조회")
