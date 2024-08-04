@@ -51,10 +51,10 @@ class PostService(
 
     fun findPageBy(
         pageRequest: PageRequest,
-        searchDto: PostSearchRequestDto,
+        requestDto: PostSearchRequestDto,
     ): Page<PostSummaryResponseDto> =
         postRepository
-            .findPageBy(pageRequest, searchDto)
+            .findPageBy(pageRequest, requestDto)
             .toSummaryRespnoseDto()
 
     fun getPost(id: UUID): PostDetailResponseDto =

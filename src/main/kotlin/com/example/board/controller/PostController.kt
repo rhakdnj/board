@@ -79,7 +79,7 @@ class PostController(
                 postService
                     .findPageBy(
                         pageRequest = PageRequest.of(page - 1, size),
-                        searchDto = request.toDto(),
+                        requestDto = request.toDto(),
                     ).toResponse(),
             )
 

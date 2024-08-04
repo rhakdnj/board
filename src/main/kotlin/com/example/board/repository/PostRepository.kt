@@ -17,7 +17,7 @@ interface PostRepository :
 interface CustomPostRepository {
     fun findPageBy(
         pageRequest: PageRequest,
-        searchDto: PostSearchRequestDto,
+        requestDto: PostSearchRequestDto,
     ): Page<Post>
 }
 
@@ -26,13 +26,19 @@ class CustomPostRepositoryImpl :
     CustomPostRepository {
     override fun findPageBy(
         pageRequest: PageRequest,
-        searchDto: PostSearchRequestDto,
+        requestDto: PostSearchRequestDto,
     ): Page<Post> {
         val result =
             from(post)
                 .where(
-                    searchDto.title?.let { post.title.contains(it) },
-                    searchDto.createdBy?.let { post.createdBy.eq(it) },
+                    requestDto.title?.let { post.title.contains(it) },
+                    requestDto.createdBy?.let { post.createdBy.eq(it) },
+                    requestDto.tag?.let {
+                        post.tags
+                            .any()
+                            .name
+                            .eq(it)
+                    },
                 ).orderBy(post.createdAt.desc())
                 .offset(pageRequest.offset)
                 .limit(pageRequest.pageSize.toLong())
