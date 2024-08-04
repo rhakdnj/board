@@ -1,0 +1,10 @@
+### 게시글 생성
+POST {{local}}/posts/{{postId}}/likes?createdBy={{createdBy}}
+Content-Type: application/json
+
+{
+  "title": "title",
+  "content": "content",
+  "createdBy": "createdBy",
+  "tags": ["tag1", "tag2"]
+}

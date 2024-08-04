@@ -12,6 +12,7 @@ data class PostSummaryResponse(
     val createdBy: String,
     val createdAt: LocalDateTime,
     val tag: String? = null,
+    val likeCount: Int = 0,
 )
 
 fun Page<PostSummaryResponseDto>.toResponse() =
