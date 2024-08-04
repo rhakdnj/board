@@ -39,6 +39,19 @@ class Post(
         }
         this.title = updateDto.title
         this.content = updateDto.content
+        replaceTags(updateDto.tags)
         super.updatedBy(updateDto.updatedBy)
+    }
+
+    /**
+     * 리스트 비교 연산자
+     * 	1.	리스트의 크기 비교: 먼저 두 리스트의 크기를 비교합니다. 크기가 다르면 false를 반환합니다.
+     * 	2.	원소 값 비교: 각 원소를 순차적으로 비교합니다. 각 원소가 동일한지 확인합니다. 모든 원소가 같은 위치에 동일한 값을 가지고 있으면 true, 그렇지 않으면 false를 반환합니다.
+     */
+    private fun replaceTags(tags: List<String>) {
+        if (this.tags.map { it.name } != tags) {
+            this.tags.clear()
+            this.tags.addAll(tags.map { Tag(post = this, name = it, createdBy = this.createdBy) })
+        }
     }
 }
