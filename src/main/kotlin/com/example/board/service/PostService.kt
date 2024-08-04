@@ -2,6 +2,7 @@ package com.example.board.service
 
 import com.example.board.exception.PostNotDeletableException
 import com.example.board.exception.PostNotFoundException
+import com.example.board.repository.LikeRepository
 import com.example.board.repository.PostRepository
 import com.example.board.service.dto.PostCreateRequestDto
 import com.example.board.service.dto.PostDetailResponseDto
@@ -22,6 +23,7 @@ import java.util.UUID
 @Transactional(readOnly = true)
 class PostService(
     private val postRepository: PostRepository,
+    private val likeRepository: LikeRepository,
 ) {
     @Transactional
     fun createPost(createDto: PostCreateRequestDto): UUID = postRepository.save(createDto.toEntity()).id
@@ -55,9 +57,9 @@ class PostService(
     ): Page<PostSummaryResponseDto> =
         postRepository
             .findPageBy(pageRequest, requestDto)
-            .toSummaryRespnoseDto()
+            .toSummaryRespnoseDto(likeRepository::countByPostId)
 
     fun getPost(id: UUID): PostDetailResponseDto =
-        postRepository.findByIdOrNull(id)?.toDetailResponse()
+        postRepository.findByIdOrNull(id)?.toDetailResponse(likeRepository::countByPostId)
             ?: throw PostNotFoundException()
 }

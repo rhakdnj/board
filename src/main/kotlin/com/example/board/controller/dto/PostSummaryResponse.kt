@@ -29,4 +29,5 @@ fun PostSummaryResponseDto.toResponse() =
         createdBy = createdBy,
         createdAt = createdAt,
         tag = firstTag,
+        likeCount = likeCount,
     )

@@ -28,6 +28,7 @@ class PostServiceTest(
     private val postRepository: PostRepository,
     private val commentRepository: CommentRepository,
     private val tagRepository: TagRepository,
+    private val likeService: LikeService,
 ) : BehaviorSpec({
         given("게시글 생성 시") {
             When("게시글 인풋이 정상적으로 들어오면") {
@@ -67,7 +68,6 @@ class PostServiceTest(
                 }
             }
         }
-
         given("게시글 수정 시") {
             val saved =
                 postRepository.save(
@@ -170,7 +170,6 @@ class PostServiceTest(
                 }
             }
         }
-
         given("게시글 삭제시") {
             val saved =
                 postRepository.save(
@@ -282,6 +281,14 @@ class PostServiceTest(
                 ),
             )
 
+            likeService.createLike(
+                postId = saved.id,
+                createdBy = "createdBy1",
+            )
+            likeService.createLike(
+                postId = saved.id,
+                createdBy = "createdBy2",
+            )
             When("게시글이 있을 때") {
                 val post = postService.getPost(saved.id)
                 then("게시글의 내용이 정상적으로 반한됨을 확인한다.") {
@@ -295,6 +302,9 @@ class PostServiceTest(
                     post.tags[0] shouldBe "tag1"
                     post.tags[1] shouldBe "tag2"
                     post.tags[2] shouldBe "tag3"
+                }
+                then("좋아요 개수가 조회됨을 확인한다.") {
+                    post.likeCount shouldBe 2
                 }
             }
 
@@ -385,6 +395,33 @@ class PostServiceTest(
                     postPage.number shouldBe 0
                     postPage.size shouldBe 5
                     postPage.content.size shouldBe 5
+                }
+            }
+            When("좋아요가 추가됐을 때") {
+                val postPage =
+                    postService.findPageBy(
+                        PageRequest.of(0, 5),
+                        PostSearchRequestDto(
+                            tag = "tag5",
+                        ),
+                    )
+
+                postPage.content.forEach {
+                    likeService.createLike(postId = it.id, createdBy = "createdBy1")
+                    likeService.createLike(postId = it.id, createdBy = "createdBy2")
+                }
+
+                val afterLikePostPage =
+                    postService.findPageBy(
+                        PageRequest.of(0, 5),
+                        PostSearchRequestDto(
+                            tag = "tag5",
+                        ),
+                    )
+                then("좋아요 개수가 정상적으로 조회됨을 확인한다") {
+                    afterLikePostPage.content.forEach {
+                        it.likeCount shouldBe 2
+                    }
                 }
             }
         }

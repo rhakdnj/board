@@ -12,9 +12,10 @@ data class PostDetailResponseDto(
     val createdAt: LocalDateTime,
     val comments: List<CommentResponseDto> = emptyList(),
     val tags: List<String> = emptyList(),
+    val likeCount: Int = 0,
 )
 
-fun Post.toDetailResponse() =
+fun Post.toDetailResponse(likeCount: (UUID) -> Int) =
     PostDetailResponseDto(
         id = id,
         title = title,
@@ -23,4 +24,5 @@ fun Post.toDetailResponse() =
         createdAt = createdAt,
         comments = comments.map { it.toResponseDto() },
         tags = tags.map { it.name },
+        likeCount = likeCount(id),
     )
