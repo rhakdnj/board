@@ -2,6 +2,7 @@ package com.example.board.repository
 
 import com.example.board.domain.Post
 import com.example.board.domain.QPost.post
+import com.example.board.domain.QTag.tag
 import com.example.board.service.dto.PostSearchRequestDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -28,8 +29,12 @@ class CustomPostRepositoryImpl :
         pageRequest: PageRequest,
         requestDto: PostSearchRequestDto,
     ): Page<Post> {
+        // HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory
+        // - offset + limit 쿼리 발생이 아니라 메모리상에서 처리함
         val result =
             from(post)
+                .leftJoin(post.tags, tag)
+                .fetchJoin()
                 .where(
                     requestDto.title?.let { post.title.contains(it) },
                     requestDto.createdBy?.let { post.createdBy.eq(it) },
